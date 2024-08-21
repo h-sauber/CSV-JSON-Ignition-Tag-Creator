@@ -35,6 +35,8 @@ python csv_to_json.py path/to/yourfile.csv
 Replace path/to/yourfile.csv with the path to your CSV file. The script will generate a JSON file with the same base name as the CSV file in the same directory.
 ```
 
+Please ensure that the file you wish to convert is located in your project directory.
+
 ## Configuration
 
 ### Character Replacement
