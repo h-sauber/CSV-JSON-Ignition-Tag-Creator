@@ -87,17 +87,22 @@ def csv_to_json(csv_file_path):
         json.dump(json_data, json_file, indent=4)  # indent=4 for pretty-printing
     
     print(f'JSON file created: {json_file_path}')
-    print(f'Total Data tags {tcount}')
-def main():
-    # Set up argument parsing
-    parser = argparse.ArgumentParser(description='Convert a CSV file to a JSON file for Ignition import.')
-    parser.add_argument('csv_file', type=str, help='Path to the input CSV file')
-    
-    # Parse the arguments
-    args = parser.parse_args()
-    
-    # Call the conversion function
-    csv_to_json(args.csv_file)
+    print(f'Total Data tags {tcount}\n')
 
+    
+def process_all_csv_files():
+    """
+    Process all CSV files in the directory where the script is located.
+    """
+    script_dir = os.path.dirname(__file__)
+    csv_count = 0
+    # Iterate over all files in the script directory
+    for file_name in os.listdir(script_dir):
+        if file_name.endswith('.csv'):
+            csv_file_path = os.path.join(script_dir, file_name)
+            csv_to_json(csv_file_path)
+            csv_count += 1
+    print(f'Total Number of Files Translated: {csv_count}\n')
 if __name__ == '__main__':
-    main()
+    #main()
+    process_all_csv_files()
