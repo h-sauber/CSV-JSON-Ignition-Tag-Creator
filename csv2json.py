@@ -19,7 +19,10 @@ def clean_name (Name):
 def csv_to_json(csv_file_path):
     # Generate the JSON file path by changing the extension from .csv to .json
     base, _ = os.path.splitext(csv_file_path)
-    json_file_path = base + '.json'
+    json_file_path =  base + '.json'
+    file_name = os.path.basename(base)
+    
+    print(f'File Name: {file_name}')
     
     # Initialize the JSON structure
     json_data = {
