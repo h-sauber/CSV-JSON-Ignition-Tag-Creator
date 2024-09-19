@@ -20,7 +20,7 @@ This repository contains a Python script designed to convert CSV files into JSON
 1. **Clone the Repository**:
 
     ```bash
-    git clone https://github.com/yourusername/repository.git
+    git clone https://github.com/yourusername/CSV-JSON-Ignition-Tag-Creator.git
     cd repository
     ```
 
@@ -31,11 +31,11 @@ This repository contains a Python script designed to convert CSV files into JSON
 To convert a CSV file to JSON, use the following command:
 
 ```bash
-python csv_to_json.py path/to/yourfile.csv
-Replace path/to/yourfile.csv with the path to your CSV file. The script will generate a JSON file with the same base name as the CSV file in the same directory.
+python csv_to_json.py
+The script will generate a JSON file with the same base name as the CSV file in the input folder.
 ```
 
-Please ensure that the file you wish to convert is located in your project directory.
+Please ensure that the file you wish to convert is located in then input folder.
 
 ## Configuration
 
@@ -72,10 +72,10 @@ The formatString values are mapped as follows:
 - "-4" to "00.00"
 
 ## Integration Context
-This script is specifically designed to assist in the integration of Ignition with the PI System by:
+This script is specifically designed to assist in the integration of Ignition tags with data from the PI System by:
 
-- Facilitating Data Transfer: Converting data exported from Ignition into a format that can be easily imported into the PI System.
-- Ensuring Compatibility: Adjusting data types and formats to meet the requirements of both Ignition and the PI System.
+- Facilitating Data Transfer: Converting data exported from the PI System into a format that can be easily imported into Ignition.
+- Ensuring Compatibility: Adjusting data types and formats to meet the requirements of Ignition.
 
 ## File Exclusions
 The repository includes a .gitignore file to exclude .csv and .json files from version control. This prevents large or sensitive files from being tracked by Git.
