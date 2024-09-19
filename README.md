@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository contains a Python script designed to convert CSV files into JSON format, specifically formatted for use with Ignition and the PI System (OSIsoft). The script facilitates the transfer of site data from Ignition to the PI System by transforming CSV data into a JSON format compatible with Ignition's requirements.
+This repository contains a Python script designed to convert CSV files into JSON format, specifically formatted for use with the PI System (OSIsoft) and Ignition. The script facilitates the transfer of site data from the PI System to Ignition by transforming CSV data into a JSON format compatible with Ignition's requirements.
 
 ## Features
 
