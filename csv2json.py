@@ -3,109 +3,102 @@ import json
 import argparse
 import os
 
-def clean_name (Name):
+def clean_name(name):
     replacements = {
         ".": "'",
         "@": ":",
         "/": ")",
         "+": "("
     }
-
     for old_char, new_char in replacements.items():
-        Name = Name.replace(old_char, new_char)
+        name = name.replace(old_char, new_char)
+    return name
 
-    return Name
-
-def csv_to_json(csv_file_path):
-    # Generate the JSON file path by changing the extension from .csv to .json
+def csv_to_json(csv_file_path, output_folder):
     base, _ = os.path.splitext(csv_file_path)
-    json_file_path =  base + '.json'
-    file_name = os.path.basename(base)
+    json_file_path = os.path.join(output_folder, os.path.basename(base)+'.json')
     
+    file_name = os.path.basename(base)
     print(f'File Name: {file_name}')
     
-    # Initialize the JSON structure
     json_data = {
         "name": "",
         "tagType": "Provider",
         "tags": []
     }
-    
-    # Read the CSV file
-    with open(csv_file_path, mode='r', encoding='utf-8') as csv_file:
-        csv_reader = csv.DictReader(csv_file)
 
-        # assign a number for tracking in the console
-        tcount = 0
+    # Try different encodings
+    encodings = ['utf-8', 'latin1', 'windows-1252']
+    for encoding in encodings:
+        try:
+            with open(csv_file_path, mode='r', encoding=encoding) as csv_file:
+                csv_reader = csv.DictReader(csv_file)
 
-        # Process each row in the CSV file
-        for row in csv_reader:
-            # assign a number for tracking in the console
-            tcount += 1
-            # Create a tag dictionary for each row
-            tag = {
-                "name": clean_name(row.get("Name", "")),
-                "formatString": row.get("displaydigits",""),
-                "engUnit": row.get("engunits", ""),
-                "dataType": row.get("pointtype", ""),
-                "valueSource": row.get("valueSource", "OPC"),
-                "opcItemPath": row.get("instrumenttag", ""),
-                "opcServer": row.get("opcServer","")
-            }
+                tcount = 0
 
-            #Translate the Datatype to one accepted by Ignition
-            if tag["dataType"] == "Float32":
-                tag["dataType"] = "Float4"
-            elif tag["dataType"] == "Digital":
-                tag["dataType"] = "Boolean"
-            else:
-                tag["dataType"] = "Unknown"
+                for row in csv_reader:
+                    tcount += 1
+                    tag = {
+                        "name": clean_name(row.get("Name", "")),
+                        "formatString": row.get("displaydigits", ""),
+                        "engUnit": row.get("engunits", ""),
+                        "dataType": row.get("pointtype", ""),
+                        "valueSource": row.get("valueSource", "OPC"),
+                        "opcItemPath": row.get("instrumenttag", ""),
+                        "opcServer": row.get("opcServer", "")
+                    }
 
-            #Translate the displayDigits to a format accepted by ignition
-            if tag["formatString"] == "3":
-                tag["formatString"] = "00.000"
-            elif tag["formatString"] == "2":
-                tag["formatString"] = "00.00"
-            elif tag["formatString"] == "1":
-                tag["formatString"] = "00.0"
-            elif tag["formatString"] == "0":
-                tag["formatString"] = "00"
-            elif tag["formatString"] == "-2":
-                tag["formatString"] = "00"
-            elif tag["formatString"] == "-4":
-                tag["formatString"] = "00.00"    
-            else:
-                tag["formatString"] = "00.000"
+                    if tag["dataType"] == "Float32":
+                        tag["dataType"] = "Float4"
+                    elif tag["dataType"] == "Digital":
+                        tag["dataType"] = "Boolean"
+                    else:
+                        tag["dataType"] = "Unknown"
 
-             
+                    if tag["formatString"] == "3":
+                        tag["formatString"] = "00.000"
+                    elif tag["formatString"] == "2":
+                        tag["formatString"] = "00.00"
+                    elif tag["formatString"] == "1":
+                        tag["formatString"] = "00.0"
+                    elif tag["formatString"] == "0":
+                        tag["formatString"] = "00"
+                    elif tag["formatString"] == "-2":
+                        tag["formatString"] = "00"
+                    elif tag["formatString"] == "-4":
+                        tag["formatString"] = "00.00"
+                    else:
+                        tag["formatString"] = "00.000"
 
-            # Check for special case for _types_ tag
-            if tag["name"] == "_types_":
-                tag["tagType"] = "Folder"
-            
-            json_data["tags"].append(tag)
+                    if tag["name"] == "_types_":
+                        tag["tagType"] = "Folder"
+                    
+                    json_data["tags"].append(tag)
 
-    # Write the JSON data to a file
-    with open(json_file_path, mode='w', encoding='utf-8') as json_file:
-        json.dump(json_data, json_file, indent=4)  # indent=4 for pretty-printing
-    
-    print(f'JSON file created: {json_file_path}')
-    print(f'Total Data tags {tcount}\n')
+            with open(json_file_path, mode='w', encoding='utf-8') as json_file:
+                json.dump(json_data, json_file, indent=4)
 
-    
+            print(f'JSON file created: {json_file_path}')
+            print(f'Total Data tags {tcount}\n')
+            break  # Exit loop if file is read successfully
+        except UnicodeDecodeError:
+            print(f"Failed to decode file with encoding {encoding}. Trying next encoding.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            break
+
 def process_all_csv_files():
-    """
-    Process all CSV files in the directory where the script is located.
-    """
     script_dir = os.path.dirname(__file__)
+    input_folder = os.path.join(script_dir, 'input')
+    output_folder = os.path.join(script_dir, 'output')
+    
     csv_count = 0
-    # Iterate over all files in the script directory
-    for file_name in os.listdir(script_dir):
+    for file_name in os.listdir(input_folder):
         if file_name.endswith('.csv'):
-            csv_file_path = os.path.join(script_dir, file_name)
-            csv_to_json(csv_file_path)
+            csv_file_path = os.path.join(input_folder, file_name)
+            csv_to_json(csv_file_path, output_folder)
             csv_count += 1
     print(f'Total Number of Files Translated: {csv_count}\n')
+
 if __name__ == '__main__':
-    #main()
     process_all_csv_files()
