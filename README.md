@@ -1,4 +1,4 @@
-# JSON Converter for Ignition to PI Integration
+# JSON Converter for Pi to Ignition Integration
 
 ## Overview
 
